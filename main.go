@@ -8,7 +8,8 @@ import (
 
 func main() {
 	server := server.NewServer("Web")
-	server.Router("/", router.Home)
-	server.Router("/sign", router.Sign)
+	// server.Router("GET","/", router.Home)
+	server.Router("GET", "/home", router.Home)
+	server.Router("GET", "/sign", router.Sign)
 	log.Fatal(server.Start(":8080"))
 }

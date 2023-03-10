@@ -14,7 +14,6 @@ type RespData struct {
 	Data string `json:"data"`
 }
 
-//func Sign(ctx *mycontent)
 func Sign(ctx *MyContext) {
 	//用户数据会以json的形式塞在body中传送过来
 	u_data := &UserData{}
