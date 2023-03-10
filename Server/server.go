@@ -1,9 +1,12 @@
 package server
 
-import "net/http"
+import (
+	"afterclass/server/router"
+	"net/http"
+)
 
 type Server interface {
-	Router(url string, handler http.HandlerFunc)
+	Router(url string, handler func(ctx *router.MyContext))
 	Start(port string) error
 }
 
@@ -11,8 +14,12 @@ type SDKServer struct {
 	Name string
 }
 
-func (s *SDKServer) Router(url string, handler http.HandlerFunc) {
-	http.HandleFunc(url, handler)
+func (s *SDKServer) Router(url string, handler func(ctx *router.MyContext)) {
+	http.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		//在这里我们生成ctx
+		ctx := router.CreateCtx(w, r)
+		handler(ctx)
+	})
 }
 
 func (s *SDKServer) Start(port string) error {
