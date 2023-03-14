@@ -5,19 +5,20 @@ import (
 	"net/http"
 )
 
+type MyHandleFunc func(ctx *router.MyContext)
+
 type Server interface {
-	Router(method string, url string, handleFunc func(ctx *router.MyContext))
+	RouteBle
 	Start(port string) error
 }
 
 type SDKServer struct {
 	Name    string
-	handler *BaseHandle
+	handler BaseHandle
 }
 
-func (s *SDKServer) Router(method string, url string, handleFunc func(ctx *router.MyContext)) {
-	key := s.handler.Key(method, url)
-	s.handler.M[key] = handleFunc
+func (s *SDKServer) Router(method string, url string, handleFunc MyHandleFunc ) {
+	s.handler.Router(method, url, handleFunc)
 }
 
 func (s *SDKServer) Start(port string) error {
@@ -27,5 +28,8 @@ func (s *SDKServer) Start(port string) error {
 }
 
 func NewServer(str string) Server {
-	return &SDKServer{Name: str, handler: &BaseHandle{M: make(map[string]func(ctx *router.MyContext))}}
+	return &SDKServer{
+		Name:    str,
+		handler: NewBaseHandleOnMap(),
+	}
 }
