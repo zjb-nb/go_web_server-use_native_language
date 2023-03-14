@@ -9,8 +9,12 @@ type RouteBle interface {
 	Router(method string, url string, handleFunc MyHandleFunc)
 }
 
+type Handler interface {
+	ServeHTTP(ctx *router.MyContext)
+}
+
 type BaseHandle interface {
-	http.Handler
+	Handler
 	RouteBle
 }
 
@@ -19,16 +23,16 @@ type BaseHandleOnMap struct {
 	m map[string]func(ctx *router.MyContext)
 }
 
-func (h *BaseHandleOnMap) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *BaseHandleOnMap) ServeHTTP(ctx *router.MyContext) {
 	//读取请求路径和方法，并进行拼接
-	key := h.Key(r.Method, r.URL.Path)
+	key := h.Key(ctx.R.Method, ctx.R.URL.Path)
 	if handler, ok := h.m[key]; ok {
 		//存在就执行这个方法
-		handler(router.CreateCtx(w, r))
+		handler(router.CreateCtx(ctx.W, ctx.R))
 	} else {
 		//不存在返回404
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("page not found"))
+		ctx.W.WriteHeader(http.StatusNotFound)
+		_, _ = ctx.W.Write([]byte("page not found"))
 	}
 }
 

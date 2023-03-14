@@ -34,10 +34,10 @@ func (s *SDKServer) Start(port string) error {
 }
 
 func NewServer(str string, builders ...FilterBuilder) Server {
-	handler := NewBaseHandleOnMap()
+	handler := NewHandleBasedOnTree()
 	//执行请求的filter为最后一个
 	var root Filter = func(ctx *router.MyContext) {
-		handler.ServeHTTP(ctx.W, ctx.R)
+		handler.ServeHTTP(ctx)
 	}
 
 	for i := len(builders) - 1; i >= 0; i-- {
