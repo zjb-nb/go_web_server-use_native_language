@@ -2,7 +2,10 @@ package server
 
 import (
 	"afterclass/server/router"
+	"context"
+	"fmt"
 	"net/http"
+	"time"
 )
 
 type MyHandleFunc func(ctx *router.MyContext)
@@ -10,6 +13,7 @@ type MyHandleFunc func(ctx *router.MyContext)
 type Server interface {
 	RouteBle
 	Start(port string) error
+	ShutDown(ctx context.Context) error
 }
 
 type SDKServer struct {
@@ -17,6 +21,14 @@ type SDKServer struct {
 	handler BaseHandle
 	//假设filter全局挂载
 	root Filter
+}
+
+//服务要关闭时执行的函数
+func (s *SDKServer) ShutDown(ctx context.Context) error {
+	fmt.Printf("server %v is shuting down\n", s.Name)
+	time.Sleep(time.Second * 2)
+	fmt.Println("now is shut down")
+	return nil
 }
 
 func (s *SDKServer) Router(method string, url string, handleFunc MyHandleFunc) {
