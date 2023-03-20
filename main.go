@@ -14,11 +14,15 @@ func main() {
 		}
 		fmt.Println("Program is ending......")
 	}()
-	server := server.NewServer("Web", server.ComputeTimeBuilder, server.SayByeBuilder)
+	servers := server.NewServer("Web", server.ComputeTimeBuilder, server.SayByeBuilder)
 	// server.Router("GET","/", router.Home)
-	server.Router("GET", "/home", router.Home)
-	server.Router("GET", "/sign", router.Sign)
-	err := server.Start(":8080")
+	go func() {
+		server.WaitShutDone()
+	}()
+
+	servers.Router("GET", "/home", router.Home)
+	servers.Router("GET", "/sign", router.Sign)
+	err := servers.Start(":8080")
 	if err != nil {
 		panic(err)
 	}
